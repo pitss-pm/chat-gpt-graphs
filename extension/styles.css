@@ -1,0 +1,393 @@
+/**
+ * ChatGPTGraphs Extension Styles
+ * Modern, clean, dark-mode compatible
+ */
+
+:root {
+  --cg-primary: #10a37f;
+  --cg-primary-hover: #0d8f6e;
+  --cg-error: #ef4444;
+  --cg-warning: #f59e0b;
+  --cg-success: #10b981;
+  --cg-text: #374151;
+  --cg-text-light: #6b7280;
+  --cg-bg: #ffffff;
+  --cg-bg-secondary: #f9fafb;
+  --cg-border: #e5e7eb;
+  --cg-shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Dark mode variables */
+  --cg-text-dark: #e5e7eb;
+  --cg-text-light-dark: #9ca3af;
+  --cg-bg-dark: #1f2937;
+  --cg-bg-secondary-dark: #111827;
+  --cg-border-dark: #374151;
+  --cg-shadow-dark: rgba(0, 0, 0, 0.3);
+}
+
+/* Main container */
+.chatgpt-graphs-container {
+  margin: 1rem 0;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--cg-bg);
+  border: 1px solid var(--cg-border);
+  box-shadow: 0 1px 3px var(--cg-shadow);
+  transition: all 0.3s ease;
+}
+
+/* SVG wrapper with watermark */
+.chatgpt-graphs-svg-wrapper {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  background: var(--cg-bg);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chatgpt-graphs-svg-wrapper svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Ensure text in SVG is readable */
+.chatgpt-graphs-svg-wrapper svg text {
+  fill: var(--cg-text) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.chatgpt-graphs-svg-wrapper svg .label text {
+  fill: var(--cg-text) !important;
+}
+
+.chatgpt-graphs-svg-wrapper svg .nodeLabel,
+.chatgpt-graphs-svg-wrapper svg .edgeLabel {
+  color: var(--cg-text) !important;
+  fill: var(--cg-text) !important;
+}
+
+/* Watermark */
+.chatgpt-graphs-watermark {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 10px;
+  color: var(--cg-text-light);
+  opacity: 0.3;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+}
+
+/* Feedback panel */
+.chatgpt-graphs-feedback-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--cg-bg-secondary);
+  border-top: 1px solid var(--cg-border);
+  font-size: 0.875rem;
+  gap: 1rem;
+}
+
+.chatgpt-graphs-status {
+  color: var(--cg-text);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Toggle button */
+.chatgpt-graphs-toggle {
+  background: transparent;
+  border: 1px solid var(--cg-border);
+  color: var(--cg-text);
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.chatgpt-graphs-toggle:hover {
+  background: var(--cg-bg);
+  border-color: var(--cg-primary);
+  color: var(--cg-primary);
+}
+
+.chatgpt-graphs-toggle:active {
+  transform: scale(0.98);
+}
+
+/* Source code display */
+.chatgpt-graphs-source {
+  margin: 0;
+  padding: 1rem;
+  background: var(--cg-bg-secondary);
+  border-top: 1px solid var(--cg-border);
+  overflow-x: auto;
+}
+
+.chatgpt-graphs-source code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-size: 0.875rem;
+  color: var(--cg-text);
+  white-space: pre;
+}
+
+/* Error panel */
+.chatgpt-graphs-error-panel {
+  padding: 1rem;
+  background: #fef2f2;
+  border-top: 1px solid #fecaca;
+}
+
+.chatgpt-graphs-error-message {
+  color: var(--cg-error);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.chatgpt-graphs-suggestion {
+  color: var(--cg-text);
+  font-size: 0.8125rem;
+  margin-left: 1.5rem;
+  font-style: italic;
+}
+
+.chatgpt-graphs-suggestions {
+  margin-top: 0.75rem;
+  padding-left: 1.25rem;
+  color: var(--cg-text);
+  font-size: 0.8125rem;
+}
+
+.chatgpt-graphs-suggestions li {
+  margin-bottom: 0.25rem;
+}
+
+/* Fix button */
+.chatgpt-graphs-fix-btn {
+  margin-top: 0.75rem;
+  background: var(--cg-primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.chatgpt-graphs-fix-btn:hover {
+  background: var(--cg-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px var(--cg-shadow);
+}
+
+.chatgpt-graphs-fix-btn:active {
+  transform: translateY(0);
+}
+
+/* Error container (for failed renders) */
+.chatgpt-graphs-error-container {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: var(--cg-error);
+  font-size: 0.875rem;
+}
+
+/* ChatGPT-specific dark mode detection */
+html.dark .chatgpt-graphs-container,
+html[class*="dark"] .chatgpt-graphs-container,
+body[class*="dark"] .chatgpt-graphs-container {
+  background: var(--cg-bg-dark);
+  border-color: var(--cg-border-dark);
+  box-shadow: 0 1px 3px var(--cg-shadow-dark);
+}
+
+html.dark .chatgpt-graphs-svg-wrapper,
+html[class*="dark"] .chatgpt-graphs-svg-wrapper,
+body[class*="dark"] .chatgpt-graphs-svg-wrapper {
+  background: var(--cg-bg-dark);
+}
+
+html.dark .chatgpt-graphs-svg-wrapper svg text,
+html[class*="dark"] .chatgpt-graphs-svg-wrapper svg text,
+body[class*="dark"] .chatgpt-graphs-svg-wrapper svg text {
+  fill: var(--cg-text-dark) !important;
+}
+
+html.dark .chatgpt-graphs-svg-wrapper svg,
+html[class*="dark"] .chatgpt-graphs-svg-wrapper svg,
+body[class*="dark"] .chatgpt-graphs-svg-wrapper svg {
+  background-color: var(--cg-bg-dark) !important;
+}
+
+html.dark .chatgpt-graphs-feedback-panel,
+html[class*="dark"] .chatgpt-graphs-feedback-panel,
+body[class*="dark"] .chatgpt-graphs-feedback-panel {
+  background: var(--cg-bg-secondary-dark);
+  border-top-color: var(--cg-border-dark);
+}
+
+html.dark .chatgpt-graphs-status,
+html[class*="dark"] .chatgpt-graphs-status,
+body[class*="dark"] .chatgpt-graphs-status {
+  color: var(--cg-text-dark);
+}
+
+html.dark .chatgpt-graphs-toggle,
+html[class*="dark"] .chatgpt-graphs-toggle,
+body[class*="dark"] .chatgpt-graphs-toggle {
+  border-color: var(--cg-border-dark);
+  color: var(--cg-text-dark);
+}
+
+html.dark .chatgpt-graphs-toggle:hover,
+html[class*="dark"] .chatgpt-graphs-toggle:hover,
+body[class*="dark"] .chatgpt-graphs-toggle:hover {
+  background: var(--cg-bg-dark);
+}
+
+html.dark .chatgpt-graphs-source,
+html[class*="dark"] .chatgpt-graphs-source,
+body[class*="dark"] .chatgpt-graphs-source {
+  background: var(--cg-bg-secondary-dark);
+  border-top-color: var(--cg-border-dark);
+}
+
+html.dark .chatgpt-graphs-source code,
+html[class*="dark"] .chatgpt-graphs-source code,
+body[class*="dark"] .chatgpt-graphs-source code {
+  color: var(--cg-text-dark);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .chatgpt-graphs-container {
+    background: var(--cg-bg-dark);
+    border-color: var(--cg-border-dark);
+    box-shadow: 0 1px 3px var(--cg-shadow-dark);
+  }
+
+  .chatgpt-graphs-svg-wrapper {
+    background: var(--cg-bg-dark);
+  }
+
+  /* Dark mode SVG text */
+  .chatgpt-graphs-svg-wrapper svg text {
+    fill: var(--cg-text-dark) !important;
+  }
+
+  .chatgpt-graphs-svg-wrapper svg .label text {
+    fill: var(--cg-text-dark) !important;
+  }
+
+  .chatgpt-graphs-svg-wrapper svg .nodeLabel,
+  .chatgpt-graphs-svg-wrapper svg .edgeLabel {
+    color: var(--cg-text-dark) !important;
+    fill: var(--cg-text-dark) !important;
+  }
+  
+  /* Ensure SVG backgrounds are dark */
+  .chatgpt-graphs-svg-wrapper svg {
+    background-color: var(--cg-bg-dark) !important;
+  }
+
+  .chatgpt-graphs-watermark {
+    color: var(--cg-text-light-dark);
+  }
+
+  .chatgpt-graphs-feedback-panel {
+    background: var(--cg-bg-secondary-dark);
+    border-top-color: var(--cg-border-dark);
+  }
+
+  .chatgpt-graphs-status {
+    color: var(--cg-text-dark);
+  }
+
+  .chatgpt-graphs-toggle {
+    border-color: var(--cg-border-dark);
+    color: var(--cg-text-dark);
+  }
+
+  .chatgpt-graphs-toggle:hover {
+    background: var(--cg-bg-dark);
+  }
+
+  .chatgpt-graphs-source {
+    background: var(--cg-bg-secondary-dark);
+    border-top-color: var(--cg-border-dark);
+  }
+
+  .chatgpt-graphs-source code {
+    color: var(--cg-text-dark);
+  }
+
+  .chatgpt-graphs-error-panel {
+    background: #7f1d1d;
+    border-top-color: #991b1b;
+  }
+
+  .chatgpt-graphs-suggestion {
+    color: var(--cg-text-dark);
+  }
+
+  .chatgpt-graphs-suggestions {
+    color: var(--cg-text-dark);
+  }
+}
+
+/* Smooth animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chatgpt-graphs-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chatgpt-graphs-feedback-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .chatgpt-graphs-toggle {
+    width: 100%;
+  }
+}
+
+/* Ensure graphs don't break layout */
+.chatgpt-graphs-container img,
+.chatgpt-graphs-container svg {
+  max-width: 100%;
+  height: auto;
+}

@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "ChatGPTGraphs",
+  "version": "1.0.0",
+  "description": "Automatically detects and renders Mermaid diagrams on ChatGPT and other websites",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "<all_urls>"
+      ],
+      "js": ["contentScript.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

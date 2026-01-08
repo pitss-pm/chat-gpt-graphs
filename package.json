@@ -1,0 +1,23 @@
+{
+  "name": "chatgpt-graphs",
+  "version": "1.0.0",
+  "description": "Chrome Extension to automatically render Mermaid diagrams on ChatGPT and other websites",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^20.10.0",
+    "terser": "^5.44.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8",
+    "vite-plugin-static-copy": "^1.0.1",
+    "vite-plugin-web-extension": "^4.5.0"
+  },
+  "dependencies": {
+    "mermaid": "^10.6.1"
+  }
+}
