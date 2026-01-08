@@ -466,10 +466,11 @@ export function createGraphContainer(
   // Add hidden color input to DOM
   container.appendChild(rgbInput);
   
-  // Download button
+  // Download button - icon only for subtlety
   const downloadBtn = document.createElement('button');
   downloadBtn.className = 'chatgpt-graphs-icon-btn';
-  downloadBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download';
+  downloadBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+  downloadBtn.title = 'Download PNG';
   downloadBtn.setAttribute('aria-label', 'Download graph as PNG');
   downloadBtn.addEventListener('click', async () => {
     const svgElement = svgWrapper.querySelector('svg');
@@ -478,11 +479,13 @@ export function createGraphContainer(
       try {
         await downloadGraphAsPNG(svgElement as SVGElement, `mermaid-graph-${graphId}.png`, bgColor);
         downloadBtn.classList.add('success');
-        const originalText = downloadBtn.innerHTML;
-        downloadBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Downloaded!';
+        const originalHTML = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        downloadBtn.title = 'Downloaded!';
         setTimeout(() => {
           downloadBtn.classList.remove('success');
-          downloadBtn.innerHTML = originalText;
+          downloadBtn.innerHTML = originalHTML;
+          downloadBtn.title = 'Download PNG';
         }, 2000);
       } catch (e) {
         console.error('Download failed:', e);
@@ -493,10 +496,11 @@ export function createGraphContainer(
   });
   controlsPanel.appendChild(downloadBtn);
   
-  // Copy button
+  // Copy button - icon only for subtlety
   const copyBtn = document.createElement('button');
   copyBtn.className = 'chatgpt-graphs-icon-btn';
-  copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy';
+  copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+  copyBtn.title = 'Copy PNG';
   copyBtn.setAttribute('aria-label', 'Copy graph to clipboard');
   copyBtn.addEventListener('click', async () => {
     const svgElement = svgWrapper.querySelector('svg');
@@ -505,11 +509,13 @@ export function createGraphContainer(
       try {
         await copyGraphToClipboard(svgElement as SVGElement, bgColor);
         copyBtn.classList.add('success');
-        const originalText = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+        const originalHTML = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        copyBtn.title = 'Copied!';
         setTimeout(() => {
           copyBtn.classList.remove('success');
-          copyBtn.innerHTML = originalText;
+          copyBtn.innerHTML = originalHTML;
+          copyBtn.title = 'Copy PNG';
         }, 2000);
       } catch (e) {
         console.error('Copy failed:', e);

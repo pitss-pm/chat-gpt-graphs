@@ -139,25 +139,27 @@
 }
 
 .chatgpt-graphs-icon-btn {
-  padding: 0.375rem 0.75rem;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   font-size: 0.8125rem;
-  background: rgba(16, 163, 127, 0.1);
-  color: var(--cg-primary);
-  border: 1px solid rgba(16, 163, 127, 0.2);
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--cg-text);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  font-weight: 500;
-  white-space: nowrap;
+  justify-content: center;
+  opacity: 0.7;
 }
 
 .chatgpt-graphs-icon-btn:hover {
-  background: rgba(16, 163, 127, 0.15);
-  border-color: rgba(16, 163, 127, 0.3);
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.12);
+  opacity: 1;
   transform: translateY(-1px);
 }
 
@@ -166,15 +168,17 @@
 }
 
 .chatgpt-graphs-icon-btn.success {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(16, 185, 129, 0.1);
   color: var(--cg-success);
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.2);
+  opacity: 1;
 }
 
 .chatgpt-graphs-icon-btn.fail {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
   color: var(--cg-error);
-  border-color: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.15);
+  opacity: 1;
 }
 
 .chatgpt-graphs-rgb-picker-btn {
@@ -374,6 +378,21 @@ body[class*="dark"] .chatgpt-graphs-controls-panel {
   backdrop-filter: blur(8px);
   border-top-color: rgba(55, 65, 81, 0.5);
 }
+
+html.dark .chatgpt-graphs-icon-btn,
+html[class*="dark"] .chatgpt-graphs-icon-btn,
+body[class*="dark"] .chatgpt-graphs-icon-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--cg-text-dark);
+}
+
+html.dark .chatgpt-graphs-icon-btn:hover,
+html[class*="dark"] .chatgpt-graphs-icon-btn:hover,
+body[class*="dark"] .chatgpt-graphs-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
   
 html.dark .chatgpt-graphs-rgb-picker-btn,
 html[class*="dark"] .chatgpt-graphs-rgb-picker-btn,
@@ -487,6 +506,17 @@ body[class*="dark"] .chatgpt-graphs-source code {
     background: rgba(17, 24, 39, 0.6);
     backdrop-filter: blur(8px);
     border-top-color: rgba(55, 65, 81, 0.5);
+  }
+  
+  .chatgpt-graphs-icon-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--cg-text-dark);
+  }
+  
+  .chatgpt-graphs-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
   }
   
   .chatgpt-graphs-rgb-picker-btn {
