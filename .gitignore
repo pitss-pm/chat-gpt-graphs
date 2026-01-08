@@ -1,5 +1,10 @@
 node_modules/
 dist/
+dist-chrome/
+dist-firefox/
+dist-edge/
+dist-opera/
+releases/
 *.log
 .DS_Store
 *.tsbuildinfo

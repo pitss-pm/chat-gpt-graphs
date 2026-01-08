@@ -1,6 +1,15 @@
-# ChatGPTGraphs Chrome Extension
+# ChatGPTGraphs Browser Extension
 
-A modern Chrome Extension that automatically detects and renders Mermaid diagrams on ChatGPT and other websites.
+A modern browser extension that automatically detects and renders Mermaid diagrams on ChatGPT and other websites.
+
+## Supported Browsers
+
+| Browser | Status | Download |
+|---------|--------|----------|
+| Chrome | ✅ Supported | [Releases](../../releases) |
+| Firefox | ✅ Supported | [Releases](../../releases) |
+| Edge | ✅ Supported | [Releases](../../releases) |
+| Opera | ✅ Supported | [Releases](../../releases) |
 
 ## Features
 
@@ -10,6 +19,9 @@ A modern Chrome Extension that automatically detects and renders Mermaid diagram
 - 💬 **User Feedback UI**: Clean, non-intrusive interface with source code toggle
 - 🎭 **Dark Mode Support**: Automatically adapts to your system theme
 - ⚡ **Performance Optimized**: Processes graphs once, avoids re-render loops
+- ⏳ **Smart Loading**: Shows skeleton loader while rendering, waits for ChatGPT to finish typing
+- 🎨 **Background Control**: Change graph background color (transparent, white, black, gray)
+- 📥 **Export Options**: Download as PNG or copy to clipboard
 
 ## Supported Diagram Types
 
@@ -45,10 +57,25 @@ A modern Chrome Extension that automatically detects and renders Mermaid diagram
 ### Production Build
 
 ```bash
-npm run build
+# Build for all browsers
+npm run build:all
+
+# Build for specific browser
+npm run build:chrome
+npm run build:firefox
+npm run build:edge
+npm run build:opera
+
+# Build with zip files for release
+npm run build:release
 ```
 
-The built extension will be in the `dist` folder.
+Built extensions will be in:
+- `dist-chrome/` - Chrome extension
+- `dist-firefox/` - Firefox extension  
+- `dist-edge/` - Edge extension
+- `dist-opera/` - Opera extension
+- `releases/` - Zip files for distribution
 
 ## Development
 
@@ -101,9 +128,26 @@ ChatGPTGraphs/
 
 ## Browser Compatibility
 
-- Chrome (Manifest V3)
-- Edge (Manifest V3)
-- Other Chromium-based browsers
+| Browser | Manifest Version | Notes |
+|---------|-----------------|-------|
+| Chrome | V3 | Full support |
+| Firefox | V3 | Full support (109+) |
+| Edge | V3 | Full support |
+| Opera | V3 | Full support |
+
+## CI/CD
+
+This project uses GitHub Actions for automated builds:
+
+- **On Push**: Builds extensions for all browsers
+- **On Tag (v*)**: Creates a GitHub Release with all browser packages
+- **Artifacts**: Each browser's extension is available as a separate artifact
+
+To create a release:
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## License
 
