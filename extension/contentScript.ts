@@ -31,6 +31,29 @@ function isChatGPTTyping(): boolean {
 }
 
 /**
+ * Create a skeleton loader while diagram is rendering
+ */
+function createSkeletonLoader(): HTMLElement {
+  const skeleton = document.createElement('div');
+  skeleton.className = 'chatgpt-graphs-skeleton';
+  skeleton.innerHTML = `
+    <div class="chatgpt-graphs-skeleton-header">
+      <div class="chatgpt-graphs-skeleton-bar"></div>
+      <div class="chatgpt-graphs-skeleton-bar short"></div>
+    </div>
+    <div class="chatgpt-graphs-skeleton-body">
+      <div class="chatgpt-graphs-skeleton-box"></div>
+      <div class="chatgpt-graphs-skeleton-box"></div>
+      <div class="chatgpt-graphs-skeleton-box"></div>
+    </div>
+    <div class="chatgpt-graphs-skeleton-footer">
+      <div class="chatgpt-graphs-skeleton-bar tiny"></div>
+    </div>
+  `;
+  return skeleton;
+}
+
+/**
  * Process a single element for Mermaid diagrams
  */
 async function processElement(element: HTMLElement): Promise<void> {
@@ -62,11 +85,29 @@ async function processElement(element: HTMLElement): Promise<void> {
   markAsProcessed(element);
   processedNodes.add(element);
 
+  // Show skeleton loader immediately
+  const skeletonLoader = createSkeletonLoader();
+  const parent = element.parentElement;
+  if (parent) {
+    if (element.nextSibling) {
+      parent.insertBefore(skeletonLoader, element.nextSibling);
+    } else {
+      parent.appendChild(skeletonLoader);
+    }
+  } else {
+    element.after(skeletonLoader);
+  }
+
   // Generate unique ID for this graph
   const graphId = generateGraphId();
 
   // Render the Mermaid diagram
   const result = await renderMermaid(mermaidCode, graphId);
+
+  // Remove skeleton loader
+  if (skeletonLoader.parentNode) {
+    skeletonLoader.parentNode.removeChild(skeletonLoader);
+  }
 
   if (result.success && result.svg) {
     // Create the rendered graph container
@@ -79,18 +120,14 @@ async function processElement(element: HTMLElement): Promise<void> {
       result.fixResult
     );
 
-    // Insert the rendered graph
-    // Try to insert after the original element
-    const parent = element.parentElement;
+    // Insert the rendered graph where the skeleton was
     if (parent) {
-      // Insert after the code block
       if (element.nextSibling) {
         parent.insertBefore(graphContainer, element.nextSibling);
       } else {
         parent.appendChild(graphContainer);
       }
     } else {
-      // Fallback: insert after the element itself
       element.after(graphContainer);
     }
   } else if (result.error) {

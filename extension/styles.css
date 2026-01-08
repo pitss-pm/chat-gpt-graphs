@@ -356,6 +356,121 @@ body[class*="dark"] .chatgpt-graphs-source code {
   }
 }
 
+/* Skeleton loader */
+.chatgpt-graphs-skeleton {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--cg-bg);
+  border: 1px solid var(--cg-border);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.chatgpt-graphs-skeleton-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.chatgpt-graphs-skeleton-bar {
+  height: 12px;
+  background: linear-gradient(
+    90deg,
+    var(--cg-bg-secondary) 25%,
+    #e0e0e0 50%,
+    var(--cg-bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 6px;
+  animation: shimmer 1.5s infinite;
+}
+
+.chatgpt-graphs-skeleton-bar.short {
+  width: 60%;
+}
+
+.chatgpt-graphs-skeleton-bar.tiny {
+  width: 30%;
+  height: 8px;
+}
+
+.chatgpt-graphs-skeleton-body {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+}
+
+.chatgpt-graphs-skeleton-box {
+  flex: 1;
+  height: 120px;
+  background: linear-gradient(
+    90deg,
+    var(--cg-bg-secondary) 25%,
+    #e0e0e0 50%,
+    var(--cg-bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 8px;
+  animation: shimmer 1.5s infinite;
+}
+
+.chatgpt-graphs-skeleton-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode skeleton */
+@media (prefers-color-scheme: dark) {
+  .chatgpt-graphs-skeleton {
+    background: var(--cg-bg-dark);
+    border-color: var(--cg-border-dark);
+  }
+
+  .chatgpt-graphs-skeleton-bar,
+  .chatgpt-graphs-skeleton-box {
+    background: linear-gradient(
+      90deg,
+      var(--cg-bg-secondary-dark) 25%,
+      #2d3748 50%,
+      var(--cg-bg-secondary-dark) 75%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+html.dark .chatgpt-graphs-skeleton,
+html[class*="dark"] .chatgpt-graphs-skeleton,
+body[class*="dark"] .chatgpt-graphs-skeleton {
+  background: var(--cg-bg-dark);
+  border-color: var(--cg-border-dark);
+}
+
+html.dark .chatgpt-graphs-skeleton-bar,
+html[class*="dark"] .chatgpt-graphs-skeleton-bar,
+body[class*="dark"] .chatgpt-graphs-skeleton-bar,
+html.dark .chatgpt-graphs-skeleton-box,
+html[class*="dark"] .chatgpt-graphs-skeleton-box,
+body[class*="dark"] .chatgpt-graphs-skeleton-box {
+  background: linear-gradient(
+    90deg,
+    var(--cg-bg-secondary-dark) 25%,
+    #2d3748 50%,
+    var(--cg-bg-secondary-dark) 75%
+  );
+  background-size: 200% 100%;
+}
+
 /* Smooth animations */
 @keyframes fadeIn {
   from {
