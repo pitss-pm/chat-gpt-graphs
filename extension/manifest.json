@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ChatGPTGraphs",
+  "name": "ChatGPT Graphs",
   "version": "1.0.0",
   "description": "Automatically detects and renders Mermaid diagrams on ChatGPT and other websites",
   "permissions": [

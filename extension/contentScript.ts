@@ -9,6 +9,28 @@ import { renderMermaid, createGraphContainer } from './mermaidRenderer';
 const processedNodes = new WeakSet<HTMLElement>();
 
 /**
+ * Check if ChatGPT is currently typing/streaming content
+ */
+function isChatGPTTyping(): boolean {
+  // Check for "Stop generating" button
+  const stopButton = document.querySelector('[data-testid="stop-button"]') ||
+                     document.querySelector('button[aria-label*="Stop"]') ||
+                     document.querySelector('button:has(svg[class*="stop"])');
+  
+  if (stopButton && stopButton instanceof HTMLElement && stopButton.offsetParent !== null) {
+    return true;
+  }
+  
+  // Check for streaming indicators
+  const streamingIndicators = document.querySelectorAll('[class*="streaming"], [class*="typing"], [class*="generating"]');
+  if (streamingIndicators.length > 0) {
+    return true;
+  }
+  
+  return false;
+}
+
+/**
  * Process a single element for Mermaid diagrams
  */
 async function processElement(element: HTMLElement): Promise<void> {
@@ -27,6 +49,14 @@ async function processElement(element: HTMLElement): Promise<void> {
     length: mermaidCode.length, 
     preview: mermaidCode.substring(0, 50) 
   });
+  
+  // If ChatGPT is still typing, wait before processing
+  if (isChatGPTTyping()) {
+    console.log('ChatGPTGraphs: Waiting for ChatGPT to finish typing...');
+    // Re-check after a delay
+    setTimeout(() => processElement(element), 1000);
+    return;
+  }
 
   // Mark as processed early to avoid duplicate processing
   markAsProcessed(element);
@@ -98,6 +128,13 @@ async function processElement(element: HTMLElement): Promise<void> {
  * Scan the DOM for Mermaid diagrams
  */
 function scanForGraphs(root: HTMLElement = document.body): void {
+  // If ChatGPT is currently typing, schedule a rescan
+  if (isChatGPTTyping()) {
+    console.log('ChatGPTGraphs: ChatGPT is typing, will scan after it finishes...');
+    setTimeout(() => scanForGraphs(root), 1500);
+    return;
+  }
+  
   // Find all pre elements (ChatGPT uses pre > code structure)
   const preBlocks = root.querySelectorAll('pre');
   
