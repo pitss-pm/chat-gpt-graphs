@@ -386,49 +386,85 @@ export function createGraphContainer(
 
   container.appendChild(svgWrapper);
 
-  // Create controls panel (background color, download, copy) - restored box design
+  // Create subtle blended controls panel
   const controlsPanel = document.createElement('div');
   controlsPanel.className = 'chatgpt-graphs-controls-panel';
   
-  // Background color picker - minimal dot palette
+  // Background color picker with RGB selector
   const bgColorGroup = document.createElement('div');
   bgColorGroup.className = 'chatgpt-graphs-control-group';
-  
-  const bgColorLabel = document.createElement('span');
-  bgColorLabel.textContent = 'BG:';
-  bgColorLabel.className = 'chatgpt-graphs-control-label';
   
   const bgColorButtons = document.createElement('div');
   bgColorButtons.className = 'chatgpt-graphs-color-buttons';
   
-  const colors = [
-    { label: 'None', value: 'transparent' },
-    { label: 'White', value: '#ffffff' },
-    { label: 'Black', value: '#000000' },
-    { label: 'Gray', value: '#f3f4f6' }
-  ];
+  // RGB color input (hidden)
+  const rgbInput = document.createElement('input');
+  rgbInput.type = 'color';
+  rgbInput.className = 'chatgpt-graphs-rgb-input';
+  rgbInput.style.display = 'none';
   
-  colors.forEach(({ label, value }) => {
-    const dot = document.createElement('button');
-    dot.className = 'chatgpt-graphs-color-dot';
-    dot.title = label;
-    dot.setAttribute('aria-label', label);
-    dot.style.backgroundColor = value;
-    if (value === 'transparent') {
-      dot.classList.add('active');
-      dot.style.background = 'repeating-linear-gradient(135deg, #e5e7eb 0 4px, #fff 4px 8px)';
-    }
-    dot.addEventListener('click', () => {
-      svgWrapper.style.backgroundColor = value;
-      bgColorButtons.querySelectorAll('.chatgpt-graphs-color-dot').forEach(b => b.classList.remove('active'));
-      dot.classList.add('active');
+  // Load saved background color and apply
+  chrome.storage.local.get(['lastBackgroundColor'], (result) => {
+    let savedBgColor = result.lastBackgroundColor || 'transparent';
+    svgWrapper.style.backgroundColor = savedBgColor;
+    rgbInput.value = savedBgColor !== 'transparent' ? savedBgColor : '#ffffff';
+    
+    // Quick preset colors
+    const presetColors = [
+      { label: 'None', value: 'transparent' },
+      { label: 'White', value: '#ffffff' },
+      { label: 'Black', value: '#000000' },
+      { label: 'Gray', value: '#f3f4f6' }
+    ];
+    
+    presetColors.forEach(({ label, value }) => {
+      const dot = document.createElement('button');
+      dot.className = 'chatgpt-graphs-color-dot';
+      dot.title = label;
+      dot.setAttribute('aria-label', label);
+      dot.style.backgroundColor = value;
+      if (value === 'transparent') {
+        dot.style.background = 'repeating-linear-gradient(135deg, #e5e7eb 0 4px, #fff 4px 8px)';
+      }
+      // Mark active if matches saved color
+      if (value === savedBgColor) {
+        dot.classList.add('active');
+      }
+      dot.addEventListener('click', () => {
+        svgWrapper.style.backgroundColor = value;
+        bgColorButtons.querySelectorAll('.chatgpt-graphs-color-dot').forEach(b => b.classList.remove('active'));
+        dot.classList.add('active');
+        chrome.storage.local.set({ lastBackgroundColor: value });
+        rgbInput.value = value !== 'transparent' ? value : '#ffffff';
+      });
+      bgColorButtons.appendChild(dot);
     });
-    bgColorButtons.appendChild(dot);
+    
+    // RGB color picker button
+    const rgbPickerBtn = document.createElement('button');
+    rgbPickerBtn.className = 'chatgpt-graphs-rgb-picker-btn';
+    rgbPickerBtn.title = 'Custom color';
+    rgbPickerBtn.setAttribute('aria-label', 'Pick custom background color');
+    rgbPickerBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>';
+    
+    rgbPickerBtn.addEventListener('click', () => {
+      rgbInput.click();
+    });
+    
+    rgbInput.addEventListener('change', (e) => {
+      const color = (e.target as HTMLInputElement).value;
+      svgWrapper.style.backgroundColor = color;
+      bgColorButtons.querySelectorAll('.chatgpt-graphs-color-dot').forEach(b => b.classList.remove('active'));
+      chrome.storage.local.set({ lastBackgroundColor: color });
+    });
+    
+    bgColorButtons.appendChild(rgbPickerBtn);
+    bgColorGroup.appendChild(bgColorButtons);
+    controlsPanel.appendChild(bgColorGroup);
   });
   
-  bgColorGroup.appendChild(bgColorLabel);
-  bgColorGroup.appendChild(bgColorButtons);
-  controlsPanel.appendChild(bgColorGroup);
+  // Add hidden color input to DOM
+  container.appendChild(rgbInput);
   
   // Download button
   const downloadBtn = document.createElement('button');

@@ -84,16 +84,18 @@
   user-select: none;
 }
 
-/* Controls panel */
+/* Controls panel - subtle and blended */
 .chatgpt-graphs-controls-panel {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
-  background: var(--cg-bg-secondary);
-  border-top: 1px solid var(--cg-border);
-  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(249, 250, 251, 0.6);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(229, 231, 235, 0.5);
+  gap: 0.75rem;
   flex-wrap: wrap;
+  transition: all 0.2s ease;
 }
 
 .chatgpt-graphs-control-group {
@@ -137,26 +139,26 @@
 }
 
 .chatgpt-graphs-icon-btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  background: var(--cg-primary);
-  color: white;
-  border: none;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  background: rgba(16, 163, 127, 0.1);
+  color: var(--cg-primary);
+  border: 1px solid rgba(16, 163, 127, 0.2);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   font-weight: 500;
   white-space: nowrap;
 }
 
 .chatgpt-graphs-icon-btn:hover {
-  background: var(--cg-primary-hover);
+  background: rgba(16, 163, 127, 0.15);
+  border-color: rgba(16, 163, 127, 0.3);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px var(--cg-shadow);
 }
 
 .chatgpt-graphs-icon-btn:active {
@@ -164,11 +166,42 @@
 }
 
 .chatgpt-graphs-icon-btn.success {
-  background: var(--cg-success);
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--cg-success);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .chatgpt-graphs-icon-btn.fail {
-  background: var(--cg-error);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--cg-error);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.chatgpt-graphs-rgb-picker-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1.5px solid var(--cg-border);
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: var(--cg-text);
+}
+
+.chatgpt-graphs-rgb-picker-btn:hover {
+  border-color: var(--cg-primary);
+  background: rgba(16, 163, 127, 0.05);
+  color: var(--cg-primary);
+}
+
+.chatgpt-graphs-rgb-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .chatgpt-graphs-icon-btn svg {
@@ -337,8 +370,24 @@ body[class*="dark"] .chatgpt-graphs-svg-wrapper svg {
 html.dark .chatgpt-graphs-controls-panel,
 html[class*="dark"] .chatgpt-graphs-controls-panel,
 body[class*="dark"] .chatgpt-graphs-controls-panel {
-  background: var(--cg-bg-secondary-dark);
-  border-top-color: var(--cg-border-dark);
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(8px);
+  border-top-color: rgba(55, 65, 81, 0.5);
+}
+  
+html.dark .chatgpt-graphs-rgb-picker-btn,
+html[class*="dark"] .chatgpt-graphs-rgb-picker-btn,
+body[class*="dark"] .chatgpt-graphs-rgb-picker-btn {
+  border-color: var(--cg-border-dark);
+  background: var(--cg-bg-dark);
+  color: var(--cg-text-dark);
+}
+
+html.dark .chatgpt-graphs-rgb-picker-btn:hover,
+html[class*="dark"] .chatgpt-graphs-rgb-picker-btn:hover,
+body[class*="dark"] .chatgpt-graphs-rgb-picker-btn:hover {
+  border-color: var(--cg-primary);
+  background: rgba(16, 163, 127, 0.1);
 }
 
 html.dark .chatgpt-graphs-control-label,
@@ -435,8 +484,20 @@ body[class*="dark"] .chatgpt-graphs-source code {
   }
 
   .chatgpt-graphs-controls-panel {
-    background: var(--cg-bg-secondary-dark);
-    border-top-color: var(--cg-border-dark);
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(8px);
+    border-top-color: rgba(55, 65, 81, 0.5);
+  }
+  
+  .chatgpt-graphs-rgb-picker-btn {
+    border-color: var(--cg-border-dark);
+    background: var(--cg-bg-dark);
+    color: var(--cg-text-dark);
+  }
+  
+  .chatgpt-graphs-rgb-picker-btn:hover {
+    border-color: var(--cg-primary);
+    background: rgba(16, 163, 127, 0.1);
   }
 
   .chatgpt-graphs-control-label {
