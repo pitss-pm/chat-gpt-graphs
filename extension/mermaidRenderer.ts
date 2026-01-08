@@ -212,6 +212,89 @@ export async function renderMermaid(
 }
 
 /**
+ * Convert SVG to PNG and download
+ */
+async function downloadGraphAsPNG(svgElement: SVGElement, filename: string, backgroundColor: string): Promise<void> {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    // Fill background
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw SVG
+    ctx.drawImage(img, 0, 0);
+    
+    // Download
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+    });
+    
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
+
+/**
+ * Copy SVG as PNG to clipboard
+ */
+async function copyGraphToClipboard(svgElement: SVGElement, backgroundColor: string): Promise<void> {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = async () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    // Fill background
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw SVG
+    ctx.drawImage(img, 0, 0);
+    
+    // Copy to clipboard
+    canvas.toBlob(async (blob) => {
+      if (blob) {
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob })
+          ]);
+          console.log('Graph copied to clipboard');
+        } catch (err) {
+          console.error('Failed to copy to clipboard:', err);
+        }
+      }
+    });
+    
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
+
+/**
  * Create the rendered graph container with watermark and UI
  */
 export function createGraphContainer(
@@ -230,6 +313,7 @@ export function createGraphContainer(
   const svgWrapper = document.createElement('div');
   svgWrapper.className = 'chatgpt-graphs-svg-wrapper';
   svgWrapper.innerHTML = svg;
+  svgWrapper.style.backgroundColor = 'transparent';
 
   // Add watermark
   const watermark = document.createElement('div');
@@ -238,6 +322,79 @@ export function createGraphContainer(
   svgWrapper.appendChild(watermark);
 
   container.appendChild(svgWrapper);
+
+  // Create controls panel (background color, download, copy)
+  const controlsPanel = document.createElement('div');
+  controlsPanel.className = 'chatgpt-graphs-controls-panel';
+  
+  // Background color picker
+  const bgColorGroup = document.createElement('div');
+  bgColorGroup.className = 'chatgpt-graphs-control-group';
+  
+  const bgColorLabel = document.createElement('label');
+  bgColorLabel.textContent = 'Background:';
+  bgColorLabel.className = 'chatgpt-graphs-control-label';
+  
+  const bgColorButtons = document.createElement('div');
+  bgColorButtons.className = 'chatgpt-graphs-color-buttons';
+  
+  const colors = [
+    { label: 'None', value: 'transparent' },
+    { label: 'White', value: '#ffffff' },
+    { label: 'Black', value: '#000000' },
+    { label: 'Gray', value: '#f3f4f6' }
+  ];
+  
+  colors.forEach(({ label, value }) => {
+    const btn = document.createElement('button');
+    btn.className = 'chatgpt-graphs-color-btn';
+    btn.textContent = label;
+    if (value === 'transparent') btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      svgWrapper.style.backgroundColor = value;
+      bgColorButtons.querySelectorAll('.chatgpt-graphs-color-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+    bgColorButtons.appendChild(btn);
+  });
+  
+  bgColorGroup.appendChild(bgColorLabel);
+  bgColorGroup.appendChild(bgColorButtons);
+  controlsPanel.appendChild(bgColorGroup);
+  
+  // Download button
+  const downloadBtn = document.createElement('button');
+  downloadBtn.className = 'chatgpt-graphs-icon-btn';
+  downloadBtn.innerHTML = '⬇️ Download';
+  downloadBtn.setAttribute('aria-label', 'Download graph as PNG');
+  downloadBtn.addEventListener('click', async () => {
+    const svgElement = svgWrapper.querySelector('svg');
+    if (svgElement) {
+      const bgColor = svgWrapper.style.backgroundColor || 'transparent';
+      await downloadGraphAsPNG(svgElement as SVGElement, `mermaid-graph-${graphId}.png`, bgColor);
+    }
+  });
+  controlsPanel.appendChild(downloadBtn);
+  
+  // Copy button
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'chatgpt-graphs-icon-btn';
+  copyBtn.innerHTML = '📋 Copy';
+  copyBtn.setAttribute('aria-label', 'Copy graph to clipboard');
+  copyBtn.addEventListener('click', async () => {
+    const svgElement = svgWrapper.querySelector('svg');
+    if (svgElement) {
+      const bgColor = svgWrapper.style.backgroundColor || 'transparent';
+      await copyGraphToClipboard(svgElement as SVGElement, bgColor);
+      copyBtn.innerHTML = '✓ Copied!';
+      setTimeout(() => {
+        copyBtn.innerHTML = '📋 Copy';
+      }, 2000);
+    }
+  });
+  controlsPanel.appendChild(copyBtn);
+  
+  container.appendChild(controlsPanel);
 
   // Create feedback panel
   const feedbackPanel = document.createElement('div');
