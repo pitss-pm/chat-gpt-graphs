@@ -215,83 +215,146 @@ export async function renderMermaid(
  * Convert SVG to PNG and download
  */
 async function downloadGraphAsPNG(svgElement: SVGElement, filename: string, backgroundColor: string): Promise<void> {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      reject(new Error('Could not get canvas context'));
+      return;
+    }
 
-  const svgData = new XMLSerializer().serializeToString(svgElement);
-  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(svgBlob);
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
 
-  const img = new Image();
-  img.onload = () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    
-    // Fill background
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw SVG
-    ctx.drawImage(img, 0, 0);
-    
-    // Download
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(a.href);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        canvas.width = img.width || svgElement.clientWidth || 800;
+        canvas.height = img.height || svgElement.clientHeight || 600;
+        
+        // Fill background
+        if (backgroundColor && backgroundColor !== 'transparent') {
+          ctx.fillStyle = backgroundColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        } else {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Draw SVG
+        ctx.drawImage(img, 0, 0);
+        
+        // Download
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            URL.revokeObjectURL(url);
+            resolve();
+          } else {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to create blob'));
+          }
+        }, 'image/png');
+      } catch (e) {
+        URL.revokeObjectURL(url);
+        reject(e);
       }
-    });
+    };
     
-    URL.revokeObjectURL(url);
-  };
-  img.src = url;
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Failed to load SVG image'));
+    };
+    
+    img.src = url;
+  });
 }
 
 /**
  * Copy SVG as PNG to clipboard
  */
 async function copyGraphToClipboard(svgElement: SVGElement, backgroundColor: string): Promise<void> {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      reject(new Error('Could not get canvas context'));
+      return;
+    }
 
-  const svgData = new XMLSerializer().serializeToString(svgElement);
-  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(svgBlob);
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
 
-  const img = new Image();
-  img.onload = async () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    
-    // Fill background
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw SVG
-    ctx.drawImage(img, 0, 0);
-    
-    // Copy to clipboard
-    canvas.toBlob(async (blob) => {
-      if (blob) {
-        try {
-          await navigator.clipboard.write([
-            new ClipboardItem({ 'image/png': blob })
-          ]);
-          console.log('Graph copied to clipboard');
-        } catch (err) {
-          console.error('Failed to copy to clipboard:', err);
+    const img = new Image();
+    img.onload = async () => {
+      try {
+        canvas.width = img.width || svgElement.clientWidth || 800;
+        canvas.height = img.height || svgElement.clientHeight || 600;
+        
+        // Fill background
+        if (backgroundColor && backgroundColor !== 'transparent') {
+          ctx.fillStyle = backgroundColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        } else {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
+        
+        // Draw SVG
+        ctx.drawImage(img, 0, 0);
+        
+        // Copy to clipboard
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            try {
+              if (navigator.clipboard && navigator.clipboard.write) {
+                await navigator.clipboard.write([
+                  new ClipboardItem({ 'image/png': blob })
+                ]);
+                URL.revokeObjectURL(url);
+                resolve();
+              } else {
+                // Fallback for browsers without clipboard API
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'graph.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+                URL.revokeObjectURL(url);
+                reject(new Error('Clipboard API not available'));
+              }
+            } catch (err) {
+              URL.revokeObjectURL(url);
+              reject(err);
+            }
+          } else {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to create blob'));
+          }
+        }, 'image/png');
+      } catch (e) {
+        URL.revokeObjectURL(url);
+        reject(e);
       }
-    });
+    };
     
-    URL.revokeObjectURL(url);
-  };
-  img.src = url;
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Failed to load SVG image'));
+    };
+    
+    img.src = url;
+  });
 }
 
 /**
@@ -323,107 +386,105 @@ export function createGraphContainer(
 
   container.appendChild(svgWrapper);
 
-  // Create subtle floating controls overlay
-  const controlsOverlay = document.createElement('div');
-  controlsOverlay.className = 'chatgpt-graphs-minimal-controls';
-  controlsOverlay.tabIndex = 0;
-  controlsOverlay.setAttribute('aria-label', 'Graph actions');
-  svgWrapper.appendChild(controlsOverlay);
-  let hideTimeout: ReturnType<typeof setTimeout>;
-  function showControls() {
-    controlsOverlay.classList.add('show');
-    clearTimeout(hideTimeout);
-  }
-  function hideControls() {
-    controlsOverlay.classList.remove('show');
-  }
-  svgWrapper.addEventListener('mouseenter', showControls);
-  svgWrapper.addEventListener('mouseleave', () => {
-    hideTimeout = setTimeout(hideControls, 100);
-  });
-  controlsOverlay.addEventListener('mouseenter', showControls);
-  controlsOverlay.addEventListener('mouseleave', () => {
-    hideTimeout = setTimeout(hideControls, 100);
-  });
-  // on focus for accessibility
-  svgWrapper.addEventListener('focusin', showControls);
-  svgWrapper.addEventListener('focusout', hideControls);
-
-  // Minimal dot-palette background color picker
-  const bgPalette = document.createElement('div');
-  bgPalette.className = 'cg-mini-bg-palette';
-  const bgColors = [
-    { value: 'transparent', label: 'No BG' },
-    { value: '#fff', label: 'White' },
-    { value: '#000', label: 'Black' },
-    { value: '#f3f4f6', label: 'Gray' },
+  // Create controls panel (background color, download, copy) - restored box design
+  const controlsPanel = document.createElement('div');
+  controlsPanel.className = 'chatgpt-graphs-controls-panel';
+  
+  // Background color picker - minimal dot palette
+  const bgColorGroup = document.createElement('div');
+  bgColorGroup.className = 'chatgpt-graphs-control-group';
+  
+  const bgColorLabel = document.createElement('span');
+  bgColorLabel.textContent = 'BG:';
+  bgColorLabel.className = 'chatgpt-graphs-control-label';
+  
+  const bgColorButtons = document.createElement('div');
+  bgColorButtons.className = 'chatgpt-graphs-color-buttons';
+  
+  const colors = [
+    { label: 'None', value: 'transparent' },
+    { label: 'White', value: '#ffffff' },
+    { label: 'Black', value: '#000000' },
+    { label: 'Gray', value: '#f3f4f6' }
   ];
-  bgColors.forEach(({ value, label }) => {
+  
+  colors.forEach(({ label, value }) => {
     const dot = document.createElement('button');
-    dot.className = 'cg-mini-bg-dot';
+    dot.className = 'chatgpt-graphs-color-dot';
     dot.title = label;
-    dot.style.background = value;
     dot.setAttribute('aria-label', label);
-    if (value === 'transparent') dot.classList.add('active');
-    dot.onclick = (e) => {
-      e.preventDefault();
-      svgWrapper.style.backgroundColor = value;
-      // Mark active
-      bgPalette.querySelectorAll('.cg-mini-bg-dot').forEach(d => d.classList.remove('active'));
+    dot.style.backgroundColor = value;
+    if (value === 'transparent') {
       dot.classList.add('active');
-    };
-    bgPalette.appendChild(dot);
+      dot.style.background = 'repeating-linear-gradient(135deg, #e5e7eb 0 4px, #fff 4px 8px)';
+    }
+    dot.addEventListener('click', () => {
+      svgWrapper.style.backgroundColor = value;
+      bgColorButtons.querySelectorAll('.chatgpt-graphs-color-dot').forEach(b => b.classList.remove('active'));
+      dot.classList.add('active');
+    });
+    bgColorButtons.appendChild(dot);
   });
-  controlsOverlay.appendChild(bgPalette);
-
+  
+  bgColorGroup.appendChild(bgColorLabel);
+  bgColorGroup.appendChild(bgColorButtons);
+  controlsPanel.appendChild(bgColorGroup);
+  
   // Download button
   const downloadBtn = document.createElement('button');
-  downloadBtn.className = 'cg-mini-icon-btn';
-  downloadBtn.title = 'Download PNG';
+  downloadBtn.className = 'chatgpt-graphs-icon-btn';
+  downloadBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download';
   downloadBtn.setAttribute('aria-label', 'Download graph as PNG');
-  downloadBtn.innerHTML = `<svg height="18" width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7" /></svg>`;
-  downloadBtn.onclick = async () => {
+  downloadBtn.addEventListener('click', async () => {
     const svgElement = svgWrapper.querySelector('svg');
     if (svgElement) {
       const bgColor = svgWrapper.style.backgroundColor || 'transparent';
       try {
         await downloadGraphAsPNG(svgElement as SVGElement, `mermaid-graph-${graphId}.png`, bgColor);
-        showControls(); // show feedback
         downloadBtn.classList.add('success');
-        setTimeout(() => downloadBtn.classList.remove('success'), 1200);
+        const originalText = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Downloaded!';
+        setTimeout(() => {
+          downloadBtn.classList.remove('success');
+          downloadBtn.innerHTML = originalText;
+        }, 2000);
       } catch (e) {
-        downloadBtn.title = 'Download failed';
+        console.error('Download failed:', e);
         downloadBtn.classList.add('fail');
-        setTimeout(() => { downloadBtn.classList.remove('fail'); downloadBtn.title = 'Download PNG'; }, 2000);
+        setTimeout(() => downloadBtn.classList.remove('fail'), 2000);
       }
     }
-  };
-  controlsOverlay.appendChild(downloadBtn);
-
+  });
+  controlsPanel.appendChild(downloadBtn);
+  
   // Copy button
   const copyBtn = document.createElement('button');
-  copyBtn.className = 'cg-mini-icon-btn';
-  copyBtn.title = 'Copy PNG';
+  copyBtn.className = 'chatgpt-graphs-icon-btn';
+  copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy';
   copyBtn.setAttribute('aria-label', 'Copy graph to clipboard');
-  copyBtn.innerHTML = `<svg height="18" width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><rect x="2" y="2" width="13" height="13" rx="2"/></svg>`;
-  copyBtn.onclick = async () => {
+  copyBtn.addEventListener('click', async () => {
     const svgElement = svgWrapper.querySelector('svg');
     if (svgElement) {
       const bgColor = svgWrapper.style.backgroundColor || 'transparent';
       try {
         await copyGraphToClipboard(svgElement as SVGElement, bgColor);
-        showControls();
         copyBtn.classList.add('success');
-        copyBtn.title = 'Copied!';
-        setTimeout(() => { copyBtn.classList.remove('success'); copyBtn.title = 'Copy PNG'; }, 1500);
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+        setTimeout(() => {
+          copyBtn.classList.remove('success');
+          copyBtn.innerHTML = originalText;
+        }, 2000);
       } catch (e) {
-        copyBtn.title = 'Copy failed';
+        console.error('Copy failed:', e);
         copyBtn.classList.add('fail');
-        setTimeout(() => { copyBtn.classList.remove('fail'); copyBtn.title = 'Copy PNG'; }, 2000);
+        setTimeout(() => copyBtn.classList.remove('fail'), 2000);
       }
     }
-  };
-  controlsOverlay.appendChild(copyBtn);
+  });
+  controlsPanel.appendChild(copyBtn);
+  
+  container.appendChild(controlsPanel);
 
 
   // Create feedback panel
